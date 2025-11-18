@@ -182,6 +182,17 @@
                     "Pix"
                 ],
                 "operationId": "cede7c3f747444af9878d007300eea91",
+                "parameters": [
+                    {
+                        "name": "x-mock-response-name",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "SUCESSO_PIX ou ERRO_PIX"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -269,6 +280,17 @@
                     "Withdraw"
                 ],
                 "operationId": "480f5a1e6339ff26ee076ffcf4ec12d9",
+                "parameters": [
+                    {
+                        "name": "x-mock-response-name",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "SUCESSO_WD ou ERROW_WD"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {

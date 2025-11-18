@@ -14,6 +14,9 @@ class WithdrawController extends Controller
         path: '/api/withdraw',
         tags: ['Withdraw'],
         security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'x-mock-response-name', in: 'header', required: true, schema: new OA\Schema(type: 'string', example: 'SUCESSO_WD ou ERROW_WD')),
+        ],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(

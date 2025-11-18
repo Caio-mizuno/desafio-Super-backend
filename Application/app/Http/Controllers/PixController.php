@@ -15,6 +15,9 @@ class PixController extends Controller
         path: '/api/pix',
         tags: ['Pix'],
         security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'x-mock-response-name', in: 'header', required: true, schema: new OA\Schema(type: 'string', example: 'SUCESSO_PIX ou ERRO_PIX')),
+        ],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
