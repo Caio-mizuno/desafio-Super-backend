@@ -23,7 +23,6 @@ class SubadqBPixStrategy implements PixGenerationStrategyInterface
         ]);
 
         return [
-            'external_pix_id' => $response->json('pix_id'),
             'transaction_id' => $response->json('transaction_id')
         ];
     }

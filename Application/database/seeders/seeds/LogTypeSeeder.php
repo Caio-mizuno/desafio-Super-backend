@@ -15,7 +15,7 @@ class LogTypeSeeder extends Seeder
             LogType::create(['description' => 'Auth login']);
             LogType::create(['description' => 'Auth me']);
             LogType::create(['description' => 'Auth logout']);
-            LogType::create(['description' => 'Payment']);
+            LogType::create(['description' => 'PIX']);
             LogType::create(['description' => 'Withdraw']);
         }
     }

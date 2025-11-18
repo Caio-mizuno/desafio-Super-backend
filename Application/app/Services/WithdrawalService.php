@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Constants\PixStatus;
 use App\Exceptions\BasicException;
+use App\Helpers\LogHelper;
 use App\Models\User;
 use App\Models\Withdrawal;
 use App\Repositories\Interfaces\WithdrawalRepositoryInterface;
@@ -15,7 +16,6 @@ class WithdrawalService
 {
     public function __construct(
         private WithdrawalRepositoryInterface $withdrawalRepository,
-        private LogRepositoryInterface $logRepository,
         private PixStrategyResolver $resolver
 
     ) {}
@@ -56,7 +56,7 @@ class WithdrawalService
             'requested_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ]);
 
-        $this->logRepository->create(
+        LogHelper::save(
             7,
             'Withdrawal created',
             $data,

@@ -2,6 +2,7 @@
 
 namespace App\Services\Pix\Strategies\SubadqA;
 
+use App\Helpers\LogHelper;
 use App\Helpers\SubadqAHelper;
 use App\Services\Pix\Strategies\PixGenerationStrategyInterface;
 
@@ -25,8 +26,9 @@ class SubadqAPixStrategy implements PixGenerationStrategyInterface
             "expires_in" => env('SUBADQA_PIX_EXPIRES_IN', 3600),
         ]);
 
+        LogHelper::save(6, 'PIX created', $data, $response->json());
+
         return [
-            'external_pix_id' => $response->json('pix_id'),
             'transaction_id' => $response->json('transaction_id'),
             'location' => $response->json('location'),
             'qrcode' => $response->json('qrcode'),
@@ -34,6 +36,7 @@ class SubadqAPixStrategy implements PixGenerationStrategyInterface
             'status' => $response->json('status'),
         ];
     }
+
     public function createWithdraw(array $data): array
     {
         $response = $this->helper->client($data)->post('/withdraw', [
@@ -47,7 +50,8 @@ class SubadqAPixStrategy implements PixGenerationStrategyInterface
             'amount' => (float) $data['amount'],
             'transaction_id' => $data['transaction_id'],
         ]);
-        $this->logRepository->create(7, 'Withdrawal created', $data, $withdrawal->toArray());
+
+        LogHelper::save(7, 'Withdrawal created', $data, $response->json());
 
         return [
             'withdraw_id' => $response->json('withdraw_id'),

@@ -16,6 +16,7 @@ class CreatePixRequest extends FormRequest
         return [
             'amount' => ['required', 'numeric', 'min:0.01'],
             'mock_header' => ['nullable', 'string'],
+            'idempotency' => ['required', 'string', 'unique:pixes,order'],
         ];
     }
 }

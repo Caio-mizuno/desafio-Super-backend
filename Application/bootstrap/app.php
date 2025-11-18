@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
             __DIR__ . '/../routes/V1/Public/Public.php',
             __DIR__ . '/../routes/V1/Public/Webhook.php',
         ],
-        apiPrefix: '',
+        apiPrefix: 'api',
         commands: __DIR__ . '/../routes/console.php',
         health: '/saude-server-check',
     )
