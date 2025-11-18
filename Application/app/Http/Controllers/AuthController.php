@@ -29,7 +29,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $this->authService->logout($request);
-        return $this->success(null, 'Logout realizado');
+        return $this->success(true, 'Logout realizado');
     }
 
     public function show(Request $request)
