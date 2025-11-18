@@ -23,9 +23,9 @@ class PixRepository implements PixRepositoryInterface
         return $pix;
     }
 
-    public function findByExternalId(string $externalId): ?Pix
+    public function findByExternalId(string $transactionId): ?Pix
     {
-        return $this->model->where('external_pix_id', $externalId)->first();
+        return $this->model->where('transaction_id', $transactionId)->first();
     }
 }
 

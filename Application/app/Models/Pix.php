@@ -13,7 +13,6 @@ class Pix extends Model
     protected $fillable = [
         'user_id',
         'subacquirer_id',
-        'external_pix_id',
         'transaction_id',
         'status',
         'amount',

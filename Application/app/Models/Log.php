@@ -21,6 +21,7 @@ class Log extends Model
 
     protected $casts = [
         'context' => 'array',
+        'response' => 'array',
     ];
 
     public function logType(): BelongsTo

@@ -14,7 +14,7 @@ class SubadqAPixStrategy implements PixGenerationStrategyInterface
 
     public function createPix(array $data): array
     {
-        $response = $this->helper->client($data)->post('/pix/create', [
+        $response = $this->helper->client(request()->header('x-mock-response-name') ?? 'SUCESSO_PIX')->post('/pix/create', [
             'merchant_id' => env('SUBADQA_MERCHANT_ID', 'm123'),
             'order_id' => $data['idempotency'],
             'amount' => (int) $data['amount'],
@@ -39,7 +39,7 @@ class SubadqAPixStrategy implements PixGenerationStrategyInterface
 
     public function createWithdraw(array $data): array
     {
-        $response = $this->helper->client($data)->post('/withdraw', [
+        $response = $this->helper->client(request()->header('x-mock-response-name') ?? 'SUCESSO_WD')->post('/withdraw', [
             'merchant_id' => env('SUBADQA_MERCHANT_ID', 'm123'),
             'account' => [
                 'bank_code' => $data['bank_code'],

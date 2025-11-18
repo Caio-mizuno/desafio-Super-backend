@@ -34,7 +34,6 @@ class WithdrawalService
 
         $strategy = $this->resolver->resolve($user->subacquirer->name);
         $result = $strategy->createWithdraw([
-            'mock_header' => $result['mock_header'] ?? 'SUCESSO_WD',
             'account_number' => $bankAccount->account_number,
             'account_type' => $bankAccount->account_type,
             'bank_code' => $bankAccount->bank_code,
@@ -51,9 +50,8 @@ class WithdrawalService
             'amount' => $data['amount'],
             'payer_name' => $data['payer_name'] ?? null,
             'payer_document' => $data['payer_document'] ?? null,
-            'external_pix_id' => $result['external_pix_id'] ?? null,
-            'transaction_id' => $result['transaction_id'] ?? null,
-            'requested_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            'external_withdraw_id' => $result['withdraw_id'] ?? null,
+            'transaction_id' => $pix->transaction_id ?? null,
         ]);
 
         LogHelper::save(

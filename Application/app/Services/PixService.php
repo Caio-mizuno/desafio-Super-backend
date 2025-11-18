@@ -9,6 +9,7 @@ use App\Repositories\Interfaces\LogRepositoryInterface;
 use App\Constants\PixStatus;
 use App\Helpers\LogHelper;
 use App\Services\Pix\PixStrategyResolver;
+use Illuminate\Support\Facades\Bus;
 
 class PixService
 {
@@ -31,8 +32,9 @@ class PixService
         $strategy = $this->resolver->resolve($user->subacquirer->name);
         $result = $strategy->createPix([
             'amount' => $data['amount'],
-            'mock_header' => $data['mock_header'] ?? 'SUCESSO_PIX',
             'idempotency' => $data['idempotency'],
+            'payer_name' => $user->name,
+            'payer_document' => $user->cpf_cnpj,
         ]);
 
         $pix = $this->pixRepository->create([
@@ -42,8 +44,8 @@ class PixService
             'subacquirer_id' => $user->subacquirer_id,
             'status' => PixStatus::fromString($result['status']),
             'amount' => $data['amount'],
-            'payer_name' => $data['payer_name'] ?? null,
-            'payer_document' => $data['payer_document'] ?? null,
+            'payer_name' => $user->name,
+            'payer_document' => $user->cpf_cnpj,
             'transaction_id' => $result['transaction_id'] ?? null,
             'location' => $result['location'] ?? null,
             'qrcode' => $result['qrcode'] ?? null,
@@ -56,6 +58,12 @@ class PixService
             $data,
             ['pix_id' => $pix->id, 'subacquirer' => $user->subacquirer->name]
         );
+
+
+        $job = Bus::dispatchSync(
+            new \App\Jobs\SimulatePixWebhook($pix, $user->subacquirer->name)
+        );
+        unset($job);
         return $pix;
     }
 }

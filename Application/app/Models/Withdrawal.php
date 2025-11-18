@@ -17,15 +17,11 @@ class Withdrawal extends Model
         'transaction_id',
         'status',
         'amount',
-        'requested_at',
-        'completed_at',
         'payload',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
-        'requested_at' => 'datetime',
-        'completed_at' => 'datetime',
         'payload' => 'array',
     ];
 

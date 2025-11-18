@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Constants\PixStatus;
 use App\Models\Pix;
 use App\Repositories\Interfaces\PixRepositoryInterface;
 use App\Repositories\Interfaces\LogRepositoryInterface;
@@ -15,9 +16,7 @@ class SimulatePixWebhook implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(public Pix $pix, public string $subacquirer)
-    {
-    }
+    public function __construct(public Pix $pix, public string $subacquirer) {}
 
     public function handle(PixRepositoryInterface $pixRepository, LogRepositoryInterface $logRepository): void
     {
@@ -49,11 +48,10 @@ class SimulatePixWebhook implements ShouldQueue
             ];
 
         $status = $this->subacquirer === 'SubadqA' ? 'CONFIRMED' : 'PAID';
-        $pixRepository->updateStatus($this->pix, $status, [
+        $pixRepository->updateStatus($this->pix, PixStatus::fromString($status), [
             'payment_date' => now(),
             'payload' => $payload,
         ]);
-        $logRepository->create(1, 'PIX webhook processed', ['pix_id' => $this->pix->id, 'status' => $status], Pix::class, $this->pix->id);
+        $logRepository->create(1, 'PIX webhook processed', ['pix_id' => $this->pix->id, 'status' => $status], $payload, Pix::class, $this->pix->id);
     }
 }
-

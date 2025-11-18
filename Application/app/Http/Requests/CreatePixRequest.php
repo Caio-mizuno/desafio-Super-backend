@@ -14,8 +14,7 @@ class CreatePixRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => ['required', 'numeric', 'min:0.01'],
-            'mock_header' => ['nullable', 'string'],
+            'amount' => ['required', 'integer', 'min:1'],
             'idempotency' => ['required', 'string', 'unique:pixes,idempotency'],
         ];
     }

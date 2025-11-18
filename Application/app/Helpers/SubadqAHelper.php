@@ -7,12 +7,12 @@ use Illuminate\Http\Client\PendingRequest;
 
 class SubadqAHelper
 {
-    public function client(array $data = []): PendingRequest
+    public function client(string $header): PendingRequest
     {
-        $headers = ['Accept' => 'application/json'];
-        if (!empty($data['mock_header'])) {
-            $headers['x-mock-response-name'] = $data['mock_header'];
-        }
+        $headers = [
+            'Accept' => 'application/json',
+            'x-mock-response-name' => $header,
+        ];
         return Http::baseUrl(env('SUBADQA_BASE_URL', 'https://0acdeaee-1729-4d55-80eb-d54a125e5e18.mock.pstmn.io'))
             ->withHeaders($headers);
     }
