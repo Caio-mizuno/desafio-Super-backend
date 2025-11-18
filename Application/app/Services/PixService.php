@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\Exceptions\BasicException;
-use App\Jobs\SimulatePixWebhook;
 use App\Models\Pix;
 use App\Models\User;
 use App\Repositories\Interfaces\PixRepositoryInterface;
