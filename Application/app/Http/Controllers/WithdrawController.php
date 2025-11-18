@@ -24,7 +24,7 @@ class WithdrawController extends Controller
                 properties: [
                     new OA\Property(property: 'bank_account', type: 'integer'),
                     new OA\Property(property: 'pix_id', type: 'integer'),
-                    new OA\Property(property: 'amount', type: 'number', format: 'float', minimum: 0.01),
+                    new OA\Property(property: 'amount', type: 'integer', minimum: 1),
                 ]
             )
         ),

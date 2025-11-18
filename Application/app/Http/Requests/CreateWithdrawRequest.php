@@ -16,7 +16,7 @@ class CreateWithdrawRequest extends FormRequest
         return [
             'bank_account' => ['required', 'exists:bank_accounts,id'],
             'pix_id' => ['required', 'exists:pixes,id'],
-            'amount' => ['required', 'numeric', 'min:0.01'],
+            'amount' => ['required', 'integer', 'min:1'],
         ];
     }
 }
