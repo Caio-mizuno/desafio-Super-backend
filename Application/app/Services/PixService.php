@@ -42,7 +42,7 @@ class PixService
             'expires_at' => $result['expires_at'] ?? null,
         ]);
 
-        $this->logRepository->create(1, 'PIX created', ['pix_id' => $pix->id, 'subacquirer' => $user->subacquirer->name]);
+        $this->logRepository->create(6, 'PIX created', $data, ['pix_id' => $pix->id, 'subacquirer' => $user->subacquirer->name]);
         return $pix;
     }
 }
