@@ -9,9 +9,10 @@ use Illuminate\Foundation\Configuration\Middleware;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         api: [
-            __DIR__ . '/../routes/V1/Private/Auths.php',
+            __DIR__ . '/../routes/V1/Private/Auth.php',
             __DIR__ . '/../routes/V1/Private/Payment.php',
-            __DIR__ . '/../routes/V1/Public/Publics.php',
+            __DIR__ . '/../routes/V1/Public/Public.php',
+            __DIR__ . '/../routes/V1/Public/Webhook.php',
         ],
         apiPrefix: '',
         commands: __DIR__ . '/../routes/console.php',
