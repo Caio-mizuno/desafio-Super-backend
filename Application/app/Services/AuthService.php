@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\BasicException;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -28,7 +29,7 @@ class AuthService
     {
         $user = $this->userRepository->findByEmail($data['email']);
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            return null;
+            throw new BasicException('Credenciais inválidas', 400);
         }
         $token = $user->createToken('api')->plainTextToken;
         return ['user' => $user, 'token' => $token];

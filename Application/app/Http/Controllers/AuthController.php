@@ -6,7 +6,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
- 
+
 
 class AuthController extends Controller
 {
@@ -23,9 +23,6 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         $result = $this->authService->login($request->validated());
-        if (!$result) {
-            return $this->error('Credenciais inválidas', 401);
-        }
         return $this->success($result, 'Login realizado');
     }
 
