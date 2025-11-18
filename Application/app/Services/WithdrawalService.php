@@ -11,6 +11,7 @@ use App\Repositories\Interfaces\WithdrawalRepositoryInterface;
 use App\Repositories\Interfaces\LogRepositoryInterface;
 use App\Services\Pix\PixStrategyResolver;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Bus;
 
 class WithdrawalService
 {
@@ -60,6 +61,11 @@ class WithdrawalService
             $data,
             $withdrawal->toArray()
         );
+
+        $job = Bus::dispatchSync(
+            new \App\Jobs\SimulateWithdrawWebhook($withdrawal, $user->subacquirer->name)
+        );
+        unset($job);
         return $withdrawal;
     }
 }

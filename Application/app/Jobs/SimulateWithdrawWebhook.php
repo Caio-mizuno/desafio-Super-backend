@@ -2,9 +2,11 @@
 
 namespace App\Jobs;
 
+use App\Constants\PixStatus;
 use App\Models\Withdrawal;
-use App\Repositories\WithdrawalRepositoryInterface;
-use App\Repositories\LogRepositoryInterface;
+use App\Repositories\Interfaces\WithdrawalRepositoryInterface;
+use App\Repositories\Interfaces\LogRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,9 +17,7 @@ class SimulateWithdrawWebhook implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(public Withdrawal $withdrawal, public string $subacquirer)
-    {
-    }
+    public function __construct(public Withdrawal $withdrawal, public string $subacquirer) {}
 
     public function handle(WithdrawalRepositoryInterface $withdrawalRepository, LogRepositoryInterface $logRepository): void
     {
@@ -28,8 +28,8 @@ class SimulateWithdrawWebhook implements ShouldQueue
                 'transaction_id' => $this->withdrawal->transaction_id ?? uniqid('T'),
                 'status' => 'SUCCESS',
                 'amount' => (float) $this->withdrawal->amount,
-                'requested_at' => now()->subMinutes(2)->toIso8601String(),
-                'completed_at' => now()->toIso8601String(),
+                'requested_at' => Carbon::now()->subMinutes(2)->format('Y-m-d H:i:s'),
+                'completed_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 'metadata' => ['source' => 'SubadqA'],
             ]
             : [
@@ -38,17 +38,23 @@ class SimulateWithdrawWebhook implements ShouldQueue
                     'id' => $this->withdrawal->external_withdraw_id ?? ('WDX' . $this->withdrawal->id),
                     'status' => 'DONE',
                     'amount' => (float) $this->withdrawal->amount,
-                    'processed_at' => now()->toIso8601String(),
+                    'processed_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 ],
                 'signature' => substr(sha1((string) $this->withdrawal->id), 0, 16),
             ];
 
         $status = $this->subacquirer === 'SubadqA' ? 'SUCCESS' : 'DONE';
-        $withdrawalRepository->updateStatus($this->withdrawal, $status, [
-            'completed_at' => now(),
-            'payload' => $payload,
+        $withdrawalRepository->updateStatus($this->withdrawal, PixStatus::fromString($status), [
+            'completed_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ]);
-        $logRepository->create(2, 'Withdraw webhook processed', ['withdrawal_id' => $this->withdrawal->id, 'status' => $status], Withdrawal::class, $this->withdrawal->id);
+
+        $logRepository->create(
+            2,
+            'Withdraw webhook processed',
+            ['withdrawal_id' => $this->withdrawal->id, 'status' => $status],
+            $payload,
+            Withdrawal::class,
+            $this->withdrawal->id
+        );
     }
 }
-

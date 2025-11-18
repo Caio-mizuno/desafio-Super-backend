@@ -59,7 +59,6 @@ class PixService
             ['pix_id' => $pix->id, 'subacquirer' => $user->subacquirer->name]
         );
 
-
         $job = Bus::dispatchSync(
             new \App\Jobs\SimulatePixWebhook($pix, $user->subacquirer->name)
         );
