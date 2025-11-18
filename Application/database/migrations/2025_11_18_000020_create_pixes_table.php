@@ -18,10 +18,12 @@ return new class extends Migration {
             $table->decimal('amount', 12, 2);
             $table->string('payer_name')->nullable();
             $table->string('payer_document')->nullable();
+            $table->unsignedBigInteger('expires_at')->nullable();
             $table->timestamp('payment_date')->nullable();
             $table->json('payload')->nullable();
             $table->timestamps();
             $table->index('external_pix_id');
+            $table->index('expires_at');
         });
     }
 
