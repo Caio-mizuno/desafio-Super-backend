@@ -21,13 +21,14 @@ class PixService
     {
         $pix = $this->pixRepository->create([
             'user_id' => $user->id,
+            'subacquirer_id' => $user->subacquirer_id,
             'status' => 'PENDING',
             'amount' => $data['amount'],
             'payer_name' => $data['payer_name'] ?? null,
             'payer_document' => $data['payer_document'] ?? null,
         ]);
 
-        $baseUrl = $this->getBaseUrl($user->subacquirer);
+        $baseUrl = $this->getBaseUrl($user->subacquirer->name);
         $headers = [];
         if (!empty($data['mock_header'])) {
             $headers['x-mock-response-name'] = $data['mock_header'];
@@ -46,8 +47,8 @@ class PixService
             'payload' => $response->json(),
         ]);
 
-        SimulatePixWebhook::dispatch($pix, $user->subacquirer);
-        $this->logRepository->create(1, 'PIX created', ['pix_id' => $pix->id, 'subacquirer' => $user->subacquirer]);
+        SimulatePixWebhook::dispatch($pix, $user->subacquirer->name);
+        $this->logRepository->create(1, 'PIX created', ['pix_id' => $pix->id, 'subacquirer' => $user->subacquirer->name]);
         return $pix;
     }
 

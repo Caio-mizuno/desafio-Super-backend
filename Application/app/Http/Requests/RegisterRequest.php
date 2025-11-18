@@ -17,7 +17,7 @@ class RegisterRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6'],
-            'subacquirer' => ['required', 'in:SubadqA,SubadqB'],
+            'subacquirer_id' => ['required', 'exists:subacquirers,id'],
         ];
     }
 }

@@ -21,12 +21,13 @@ class WithdrawalService
     {
         $withdrawal = $this->withdrawalRepository->create([
             'user_id' => $user->id,
+            'subacquirer_id' => $user->subacquirer_id,
             'status' => 'PENDING',
             'amount' => $data['amount'],
             'requested_at' => now(),
         ]);
 
-        $baseUrl = $this->getBaseUrl($user->subacquirer);
+        $baseUrl = $this->getBaseUrl($user->subacquirer->name);
         $headers = [];
         if (!empty($data['mock_header'])) {
             $headers['x-mock-response-name'] = $data['mock_header'];
@@ -43,8 +44,8 @@ class WithdrawalService
             'payload' => $response->json(),
         ]);
 
-        SimulateWithdrawWebhook::dispatch($withdrawal, $user->subacquirer);
-        $this->logRepository->create(2, 'Withdraw created', ['withdrawal_id' => $withdrawal->id, 'subacquirer' => $user->subacquirer]);
+        SimulateWithdrawWebhook::dispatch($withdrawal, $user->subacquirer->name);
+        $this->logRepository->create(2, 'Withdraw created', ['withdrawal_id' => $withdrawal->id, 'subacquirer' => $user->subacquirer->name]);
         return $withdrawal;
     }
 

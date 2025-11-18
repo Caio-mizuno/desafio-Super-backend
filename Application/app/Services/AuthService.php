@@ -19,7 +19,7 @@ class AuthService
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'subacquirer' => $data['subacquirer'],
+            'subacquirer_id' => $data['subacquirer_id'],
         ]);
         $token = $user->createToken('api')->plainTextToken;
         return ['user' => $user, 'token' => $token];

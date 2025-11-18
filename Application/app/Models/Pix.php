@@ -12,6 +12,7 @@ class Pix extends Model
 
     protected $fillable = [
         'user_id',
+        'subacquirer_id',
         'external_pix_id',
         'transaction_id',
         'status',
@@ -31,6 +32,11 @@ class Pix extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function subacquirer(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Subacquirer::class);
     }
 }
 

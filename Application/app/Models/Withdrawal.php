@@ -12,6 +12,7 @@ class Withdrawal extends Model
 
     protected $fillable = [
         'user_id',
+        'subacquirer_id',
         'external_withdraw_id',
         'transaction_id',
         'status',
@@ -31,6 +32,11 @@ class Withdrawal extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function subacquirer(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Subacquirer::class);
     }
 }
 
