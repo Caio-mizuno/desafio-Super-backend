@@ -14,6 +14,7 @@ class Log extends Model
         'id_tipo',
         'message',
         'context',
+        'response',
         'related_type',
         'related_id',
     ];

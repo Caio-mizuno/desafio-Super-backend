@@ -12,6 +12,11 @@ class LogTypeSeeder extends Seeder
         if (LogType::count() === 0) {
             LogType::create(['description' => 'PIX webhook processed']);
             LogType::create(['description' => 'Withdraw webhook processed']);
+            LogType::create(['description' => 'Auth login']);
+            LogType::create(['description' => 'Auth me']);
+            LogType::create(['description' => 'Auth logout']);
+            LogType::create(['description' => 'Payment']);
+            LogType::create(['description' => 'Withdraw']);
         }
     }
 }
