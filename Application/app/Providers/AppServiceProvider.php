@@ -3,10 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Repositories\PixRepositoryInterface;
-use App\Repositories\WithdrawalRepositoryInterface;
-use App\Repositories\LogRepositoryInterface;
-use App\Repositories\UserRepositoryInterface;
+use App\Repositories\Interfaces\PixRepositoryInterface;
+use App\Repositories\Interfaces\WithdrawalRepositoryInterface;
+use App\Repositories\Interfaces\LogRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\Eloquent\PixRepository;
 use App\Repositories\Eloquent\WithdrawalRepository;
 use App\Repositories\Eloquent\LogRepository;

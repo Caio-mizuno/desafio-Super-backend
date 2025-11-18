@@ -18,9 +18,6 @@ class KeySecurity
         if (empty($request->header('security')) || $request->header('security') != env('SECURITY_KEY')) {
             return response()->json('Unauthorized', 401);
         }
-
-        $request->headers->set('Accept', 'application/json');
-        $request->headers->set('Content-Type', 'application/json');
         return $next($request);
     }
 }
