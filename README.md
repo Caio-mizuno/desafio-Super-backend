@@ -1,239 +1,71 @@
-# desafio-Super-backend
-Teste para contratação de Backend para a Super
+# Como Rodar o Projeto (Docker + Variáveis de Ambiente)
 
-# 🧩 Desafio Técnico – Integração com Subadquirentes (Laravel)
+Este guia explica, do zero, como subir o ambiente com Docker, configurar o `.env` e acessar a API e a documentação.
 
-## 🧠 Contexto
+## Pré-requisitos
+- Docker Desktop instalado e em execução
+- Docker Compose disponível
 
-Você foi contratado para desenvolver um módulo de integração com **subadquirentes de pagamento** (gateways terceiros que processam PIX e saques).  
-A aplicação deve permitir que **usuários diferentes** utilizem **subadquirentes diferentes**, de forma que o sistema suporte **multiadquirência**, onde cada usuario cadastrado poderá usar qualquer subadquirente, exemplo:
+## Estrutura do Projeto
+- Código Laravel está em `Application`
+- Orquestração via `docker-compose.yml`
+- Imagens e ajustes em `Dockerfile`
 
+## Serviços e Portas
+- API (Nginx) exposta em `http://localhost:9923` (`docker-compose.yml:41`)
+- MySQL exposto em `localhost:9922` (`docker-compose.yml:63`)
+- Redis exposto em `localhost:9924` (`docker-compose.yml:76`)
 
-Cada **usuário** poderá estar vinculado a uma subadquirente diferente:
+## Configurar o .env
+1. Copie o exemplo:
+   - `cp Application/.env.example Application/.env`
+2. Ajuste os valores conforme seu ambiente:
+   - `APP_NAME`, `APP_ENV`, `APP_DEBUG`, `APP_URL`
+   - `APP_KEY` (gerado via comando abaixo)
+   - Banco: `DB_CONNECTION=mysql`, `DB_HOST=mysql-api-backend`, `DB_PORT=3306`, `DB_DATABASE=desafio-super-backend`, `DB_USERNAME=root`, `DB_PASSWORD`
+   - Segurança: `SECURITY_KEY` (usado como header `security` nas rotas protegidas)
+   - Octane: `OCTANE_SERVER=swoole`
+3. Nunca versionar segredos. Mantenha apenas o `.env.example` com valores fictícios.
 
-- Usuário A → usa **SubadqA**
-- Usuário B → usa **SubadqA**
-- Usuário C → usa **SubadqB**
+Observação: o arquivo de exemplo já vem compatível com Docker para MySQL (`Application/.env.example:78–93`).
 
-Em produção, será possível trocar a subadquirente de cada usuário, mas **essa funcionalidade não precisa ser implementada neste desafio** — ela serve apenas para guiar o raciocínio da arquitetura.
+## Subir com Docker
+1. Build e subida:
+   - `docker compose up -d --build`
+2. Gerar chave da aplicação:
+   - `docker compose exec api-backend php artisan key:generate`
+3. Rodar migrações (o supervisor já tenta executar, mas você pode rodar manualmente):
+   - `docker compose exec api-backend php artisan migrate`
+4. Se desejar popular o banco com dados de exemplo:
+   - `docker compose exec api-backend php artisan db:seed`
 
+O container `api-backend` inicia o Octane (Swoole) e `schedule:work`/`horizon` via supervisor (`docker/supervisor/supervisord.conf:20–47`). O Nginx no container `web` faz proxy para o Octane (`docker/nginx/conf.d/app.conf:2–4`, `:51–60`).
 
-Atualmente trabalhamos com duas subadquirentes:
-- **SubadqA**
-- **SubadqB**
+## Acessar a API e a Documentação
+- Base da API: `http://localhost:9923`
+- Swagger UI: `http://localhost:9923/api/documentation` (`Application/config/l5-swagger.php:11–20`)
+  - Se desejar na verão OpenAPI e Swagger UI separados, acesse: `http://localhost:9923/api/docs`
 
-Cada subadquirente oferece:
-- **Geração de PIX**
-- **Saque**
-- **Webhook** de confirmação (PIX pago / saque concluído)
+## Conexão ao Banco (local)
+- String JDBC (exemplo):
+  - `jdbc:mysql://localhost:9922/desafio-super-backend?allowPublicKeyRetrieval=true&useSSL=false` (`docker-compose.yml:68`)
 
-> ⚙️ No futuro, novas subadquirentes poderão ser integradas, portanto **a arquitetura deve ser extensível**.
+## Comandos úteis
+- Ver logs de um serviço: `docker compose logs -f api-backend`
+- Executar comandos Artisan: `docker compose exec api-backend php artisan <comando>`
+- Rodar testes: `docker compose exec api-backend php artisan test`
+- Parar serviços: `docker compose down`
+- Limpar volumes (cuidado: remove dados): `docker compose down -v`
 
----
+## Variáveis de Ambiente Principais
+- `APP_NAME`, `APP_ENV`, `APP_DEBUG`, `APP_URL`
+- `APP_KEY` (gerado por `php artisan key:generate`)
+- Banco: `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
+- Cache/Fila: `CACHE_STORE`, `QUEUE_CONNECTION`
+- Redis (opcional): `REDIS_CLIENT`, `REDIS_HOST`, `REDIS_PORT`
+- Segurança: `SECURITY_KEY` (header `security` nas rotas: veja o Swagger)
+- Octane: `OCTANE_SERVER`
 
-## 🎯 Objetivo
-
-Desenvolver uma aplicação **Laravel** que:
-
-1. Permita simular a **geração de um PIX** via uma subadquirente.  
-2. Simule o **recebimento do webhook** de confirmação do PIX.  
-3. Permita simular um **saque** via uma subadquirente.  
-4. Utilize uma estrutura de código que facilite a integração de **novas subadquirentes** no futuro.
-
----
-
-## 🧱 Requisitos Técnicos
-
-### Banco de Dados
-Crie as tabelas necessárias para controlar:
-
-- **Usuários**
-- **PIX gerados**
-- **Saques**
-- **E o que mais for necessário**
-
----
-
-### API / Fluxo principal
-
-#### 🔹 Endpoint para gerar PIX
-- **Método:** `POST`
-- **Exemplo:** `/api/pix`
-- Deve enviar o payload para a subadquirente configurada para o usuário.
-- Após gerar o PIX, simular o **recebimento do webhook** (ex: chamada interna, job, ou fila) para atualizar o status do PIX.
-
-#### 🔹 Endpoint para realizar saque
-- **Método:** `POST`
-- **Exemplo:** `/api/withdraw`
-- Deve enviar o payload para a subadquirente e registrar o saque no sistema.
-
----
-
-### ⚙️ Webhook simulado
-Como o candidato **não terá uma URL pública**, o webhook deve ser **simulado internamente** após a requisição de geração de PIX ou saque.  
-Isso pode ser feito de várias formas:
-- Fique livre e a vontade para implementar como achar que é mais válido essa simulação, lembrando que a simulação trata de um cenário onde será recebido diversas requisições, sendo no mínimo 3 ou mais requisições por segundo no Pix e consequentemente nos Webhooks.
-
-A intenção é avaliar o **fluxo que o candidato desenha** e como ele **estruturaria o processamento assíncrono**.
-
----
-## 🧾 Webhooks — Estrutura de Exemplo
-
-A seguir, seguem **exemplos de payloads** simulando notificações (webhooks) enviadas por duas subadquirentes diferentes.
-
-Esses payloads devem ser processados pela aplicação após a criação do Pix ou Saque.
-
----
-
-### 💸 Webhooks de Pix
-
-#### 📍 Modelo 1 — SubadqA
-
-```json
-{
-  "event": "pix_payment_confirmed",
-  "transaction_id": "f1a2b3c4d5e6",
-  "pix_id": "PIX123456789",
-  "status": "CONFIRMED",
-  "amount": 125.50,
-  "payer_name": "João da Silva",
-  "payer_cpf": "12345678900",
-  "payment_date": "2025-11-13T14:25:00Z",
-  "metadata": {
-    "source": "SubadqA",
-    "environment": "sandbox"
-  }
-}
-```
-
-### 📍 Modelo 2 - SubadqB
-```json
-{
-  "type": "pix.status_update",
-  "data": {
-    "id": "PX987654321",
-    "status": "PAID",
-    "value": 250.00,
-    "payer": {
-      "name": "Maria Oliveira",
-      "document": "98765432100"
-    },
-    "confirmed_at": "2025-11-13T14:40:00Z"
-  },
-  "signature": "d1c4b6f98eaa"
-}
-```
-
-| Status      | Descrição                              |
-| ----------- | -------------------------------------- |
-| `PENDING`   | Pix criado, aguardando pagamento       |
-| `PROCESSING`| Pix criado, aguardando pagamento       | 
-| `CONFIRMED` | Pagamento confirmado                   |
-| `PAID`      | Pagamento concluído com sucesso        |
-| `CANCELLED` | Pagamento cancelado pela subadquirente |
-| `FAILED`    | Erro no processamento do pagamento     |
-
-
-### 💰 Webhooks de Saque
-
-### 📍 Modelo 1 — SubadqA
-```json
-{
-  "event": "withdraw_completed",
-  "withdraw_id": "WD123456789",
-  "transaction_id": "T987654321",
-  "status": "SUCCESS",
-  "amount": 500.00,
-  "requested_at": "2025-11-13T13:10:00Z",
-  "completed_at": "2025-11-13T13:12:30Z",
-  "metadata": {
-    "source": "SubadqA",
-    "destination_bank": "Itaú"
-  }
-}
-```
-
-### 📍 Modelo 2 — SubadqB
-```json
-{
-  "type": "withdraw.status_update",
-  "data": {
-    "id": "WDX54321",
-    "status": "DONE",
-    "amount": 850.00,
-    "bank_account": {
-      "bank": "Nubank",
-      "agency": "0001",
-      "account": "1234567-8"
-    },
-    "processed_at": "2025-11-13T13:45:10Z"
-  },
-  "signature": "aabbccddeeff112233"
-}
-```
-
-
-| Status      | Descrição                               |
-| ----------- | --------------------------------------- |
-| `PENDING`   | Saque criado, aguardando processamento  |
-| `SUCCESS`   | Saque realizado com sucesso             |
-| `DONE`      | Saque concluído (equivalente a SUCCESS) |
-| `FAILED`    | Falha no processamento do saque         |
-| `CANCELLED` | Saque cancelado pela subadquirente      |
-| `PROCESSING`| Saque criado, aguardando processamento  | 
-
-
-## 🧩 Subadquirentes disponíveis (Mocks)
-
-Os mocks foram criados no **Postman** e simulam as integrações com as subadquirentes.
-
-| Subadquirente | Documentação | Base URL (Mock) |
-|----------------|--------------|-----------------|
-| **SubadqA** | [Ver documentação](https://documenter.getpostman.com/view/49994027/2sB3WvMJ8p) | `https://0acdeaee-1729-4d55-80eb-d54a125e5e18.mock.pstmn.io` |
-| **SubadqB** | [Ver documentação](https://documenter.getpostman.com/view/49994027/2sB3WvMJD7) | `https://ef8513c8-fd99-4081-8963-573cd135e133.mock.pstmn.io` |
-
----
-
-### Rotas disponíveis
-
-| Ação | Método | Endpoint | Header de Exemplo | 
-|------|---------|-----------|------------------|
-| **Gerar PIX (sucesso)** | `POST` | `/pix/create` | `x-mock-response-name: [SUCESSO_PIX] pix_create` | 
-| **Gerar PIX (erro)** | `POST` | `/pix/create` | `x-mock-response-name: [ERRO_PIX] pix_create` | 
-| **Saque (sucesso)** | `POST` | `/withdraw` | `x-mock-response-name: [SUCESSO_WD] withdraw` |
-| **Saque (erro)** | `POST` | `/withdraw` | `x-mock-response-name: [ERROW_WD] withdraw` | 
-
-> ⚠️ Todos os exemplos completos de request e response estão disponíveis nas documentações Postman acima.
-
----
-
-## ✅ Entregáveis
-
-O candidato deve entregar:
-
-1. Um **repositório público** (GitHub ou GitLab) com o código-fonte da aplicação Laravel.  
-2. Um **README** explicando:
-   - Como executar o projeto
-   - Estrutura e decisões técnicas adotadas  
-3. Scripts de **migração do banco**.  
-4. Exemplos de chamadas (via **cURL**, **Postman** ou **Swagger**).  
-
----
-
-## 🧪 Critérios de Avaliação
-
-| Critério | Peso |
-|-----------|------|
-| Organização e legibilidade do código | 🟩🟩🟩 |
-| Arquitetura extensível e clara | 🟩🟩🟩 |
-| Uso de boas práticas do Laravel | 🟩🟩 |
-| Tratamento de erros e logs | 🟩🟩 |
-| Funcionamento completo do fluxo | 🟩🟩🟩 |
-
----
-
-## 🚀 Observações Finais
-
-- O candidato **não precisa publicar o projeto online**.  
-- O foco é **avaliar a organização, arquitetura e clareza do código**.  
-- O desafio deve ser implementado **em até 1 dia** após o recebimento. 
+## Notas de Segurança
+- Nunca commit de senhas, chaves ou tokens reais
+- Use apenas o `.env.example` como referência com valores fictícios
