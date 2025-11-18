@@ -14,7 +14,7 @@ class WithdrawController extends Controller
 
     public function store(CreateWithdrawRequest $request)
     {
-        $user = User::findOrFail($request->integer('user_id'));
+        $user = auth()->user();
         $withdrawal = $this->withdrawalService->create($user, $request->validated());
         return $this->success($withdrawal, 'Saque criado');
     }

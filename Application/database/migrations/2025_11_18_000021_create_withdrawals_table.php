@@ -12,11 +12,11 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('external_withdraw_id')->nullable();
             $table->string('transaction_id')->nullable();
-            $table->enum('status', ['PENDING', 'PROCESSING', 'SUCCESS', 'DONE', 'FAILED', 'CANCELLED'])->default('PENDING');
+            $table->unsignedInteger('status')->default(0)->comment(
+                '0: PENDING, 1: PROCESSING, 2: SUCCESS, 3: DONE, 4: FAILED, 5: CANCELLED'
+            );
             $table->decimal('amount', 12, 2);
-            $table->timestamp('requested_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
-            $table->json('payload')->nullable();
+            $table->foreignId('bank_account_id')->constrained('bank_accounts')->cascadeOnDelete();
             $table->timestamps();
             $table->index('external_withdraw_id');
         });
@@ -27,4 +27,3 @@ return new class extends Migration {
         Schema::dropIfExists('withdrawals');
     }
 };
-

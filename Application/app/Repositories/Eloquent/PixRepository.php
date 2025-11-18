@@ -7,9 +7,13 @@ use App\Repositories\Interfaces\PixRepositoryInterface;
 
 class PixRepository implements PixRepositoryInterface
 {
+    public function __construct(protected Pix $model)
+    {
+    }
+
     public function create(array $data): Pix
     {
-        return Pix::create($data);
+        return $this->model->create($data);
     }
 
     public function updateStatus(Pix $pix, string $status, array $attributes = []): Pix
@@ -21,7 +25,7 @@ class PixRepository implements PixRepositoryInterface
 
     public function findByExternalId(string $externalId): ?Pix
     {
-        return Pix::where('external_pix_id', $externalId)->first();
+        return $this->model->where('external_pix_id', $externalId)->first();
     }
 }
 

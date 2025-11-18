@@ -18,6 +18,7 @@ class UserSeeder extends Seeder
             User::create([
                 'name' => 'User Login',
                 'email' => 'SubadqA@example.com',
+                'cpf_cnpj' => '48596938095',
                 'password' => Hash::make('secret123'),
                 'subacquirer_id' => $subadqAId,
             ]);
@@ -26,6 +27,7 @@ class UserSeeder extends Seeder
             User::create([
                 'name' => 'User Login',
                 'email' => 'SubadqB@example.com',
+                'cpf_cnpj' => '86807553030',
                 'password' => Hash::make('secret123'),
                 'subacquirer_id' => $subadqBId,
             ]);

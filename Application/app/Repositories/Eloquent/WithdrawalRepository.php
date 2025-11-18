@@ -7,9 +7,11 @@ use App\Repositories\Interfaces\WithdrawalRepositoryInterface;
 
 class WithdrawalRepository implements WithdrawalRepositoryInterface
 {
+    public function __construct(protected Withdrawal $model) {}
+
     public function create(array $data): Withdrawal
     {
-        return Withdrawal::create($data);
+        return $this->model->create($data);
     }
 
     public function updateStatus(Withdrawal $withdrawal, string $status, array $attributes = []): Withdrawal
@@ -21,7 +23,6 @@ class WithdrawalRepository implements WithdrawalRepositoryInterface
 
     public function findByExternalId(string $externalId): ?Withdrawal
     {
-        return Withdrawal::where('external_withdraw_id', $externalId)->first();
+        return $this->model->where('external_withdraw_id', $externalId)->first();
     }
 }
-

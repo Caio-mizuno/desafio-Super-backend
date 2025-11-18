@@ -2,60 +2,63 @@
 
 namespace App\Services;
 
+use App\Constants\PixStatus;
+use App\Exceptions\BasicException;
 use App\Jobs\SimulateWithdrawWebhook;
 use App\Models\User;
 use App\Models\Withdrawal;
 use App\Repositories\Interfaces\WithdrawalRepositoryInterface;
 use App\Repositories\Interfaces\LogRepositoryInterface;
+use App\Services\Pix\PixStrategyResolver;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class WithdrawalService
 {
     public function __construct(
         private WithdrawalRepositoryInterface $withdrawalRepository,
-        private LogRepositoryInterface $logRepository
-    ) {
-    }
+        private LogRepositoryInterface $logRepository,
+        private PixStrategyResolver $resolver
+
+    ) {}
 
     public function create(User $user, array $data): Withdrawal
     {
+        $bankAccount = $user->bankAccounts()->find($data['bank_account']);
+        if (!$bankAccount) {
+            throw new BasicException('Bank account not found', 404);
+        }
+
+        $pix = $user->pixes()->find($data['pix_id']);
+        if (!$pix) {
+            throw new BasicException('Pix not found', 404);
+        }
+
+        $strategy = $this->resolver->resolve($user->subacquirer->name);
+        $result = $strategy->createWithdraw([
+            'mock_header' => $result['mock_header'] ?? 'SUCESSO_WD',
+            'account_number' => $bankAccount->account_number,
+            'account_type' => $bankAccount->account_type,
+            'bank_code' => $bankAccount->bank_code,
+            'branch' => $bankAccount->branch,
+            'transaction_id' => $pix->transaction_id,
+            // Convert to cents, remove decimal point, secure against float precision errors
+            'amount' =>  (int) number_format($data['amount'], 2, '', ''),
+        ]);
+
         $withdrawal = $this->withdrawalRepository->create([
             'user_id' => $user->id,
             'subacquirer_id' => $user->subacquirer_id,
-            'status' => 'PENDING',
+            'status' => PixStatus::fromString($result['status']),
             'amount' => $data['amount'],
-            'requested_at' => now(),
+            'payer_name' => $data['payer_name'] ?? null,
+            'payer_document' => $data['payer_document'] ?? null,
+            'external_pix_id' => $result['external_pix_id'] ?? null,
+            'transaction_id' => $result['transaction_id'] ?? null,
+            'requested_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ]);
 
-        $baseUrl = $this->getBaseUrl($user->subacquirer->name);
-        $headers = [];
-        if (!empty($data['mock_header'])) {
-            $headers['x-mock-response-name'] = $data['mock_header'];
-        }
-        $response = Http::baseUrl($baseUrl)->withHeaders($headers)->post('/withdraw', [
-            'amount' => (float) $withdrawal->amount,
-        ]);
-
-        $externalId = $response->json('withdraw_id') ?? $response->json('data.id');
-        $transactionId = $response->json('transaction_id') ?? $response->json('data.transaction_id');
-        $this->withdrawalRepository->updateStatus($withdrawal, 'PROCESSING', [
-            'external_withdraw_id' => $externalId,
-            'transaction_id' => $transactionId,
-            'payload' => $response->json(),
-        ]);
-
-        SimulateWithdrawWebhook::dispatch($withdrawal, $user->subacquirer->name);
-        $this->logRepository->create(2, 'Withdraw created', ['withdrawal_id' => $withdrawal->id, 'subacquirer' => $user->subacquirer->name]);
+        $this->logRepository->create(7, 'Withdrawal created', $data, $withdrawal->toArray());
         return $withdrawal;
     }
-
-    private function getBaseUrl(string $subacquirer): string
-    {
-        $map = [
-            'SubadqA' => env('SUBADQA_BASE_URL', 'https://0acdeaee-1729-4d55-80eb-d54a125e5e18.mock.pstmn.io'),
-            'SubadqB' => env('SUBADQB_BASE_URL', 'https://ef8513c8-fd99-4081-8963-573cd135e133.mock.pstmn.io'),
-        ];
-        return $map[$subacquirer] ?? $map['SubadqA'];
-    }
 }
-

@@ -14,7 +14,6 @@ class CreatePixRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'integer', 'exists:users,id'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'payer_name' => ['nullable', 'string'],
             'payer_document' => ['nullable', 'string'],

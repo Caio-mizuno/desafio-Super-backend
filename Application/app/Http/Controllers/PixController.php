@@ -14,7 +14,7 @@ class PixController extends Controller
 
     public function store(CreatePixRequest $request)
     {
-        $user = User::findOrFail($request->integer('user_id'));
+        $user = auth()->user();
         $pix = $this->pixService->create($user, $request->validated());
         return $this->success($pix, 'Pix criado');
     }

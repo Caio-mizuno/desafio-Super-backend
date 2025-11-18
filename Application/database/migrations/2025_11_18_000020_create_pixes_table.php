@@ -12,7 +12,9 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('external_pix_id')->nullable();
             $table->string('transaction_id')->nullable();
-            $table->enum('status', ['PENDING', 'PROCESSING', 'CONFIRMED', 'PAID', 'CANCELLED', 'FAILED'])->default('PENDING');
+            $table->unsignedInteger('status')->default(0)->comment(
+                '0: PENDING, 1: PROCESSING, 2: CONFIRMED, 3: PAID, 4: CANCELLED, 5: FAILED'
+            );
             $table->decimal('amount', 12, 2);
             $table->string('payer_name')->nullable();
             $table->string('payer_document')->nullable();
@@ -28,4 +30,3 @@ return new class extends Migration {
         Schema::dropIfExists('pixes');
     }
 };
-

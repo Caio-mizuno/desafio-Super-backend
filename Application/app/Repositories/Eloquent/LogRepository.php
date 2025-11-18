@@ -7,10 +7,11 @@ use App\Repositories\Interfaces\LogRepositoryInterface;
 
 class LogRepository implements LogRepositoryInterface
 {
-    public function __construct(private Log $logModel) {}
+    public function __construct(protected Log $model) {}
+
     public function create(int $id_tipo, string $message, array $context = [], array $response = [], ?string $relatedType = null, ?int $relatedId = null): Log
     {
-        return $this->logModel->create([
+        return $this->model->create([
             'id_tipo' => $id_tipo,
             'message' => $message,
             'context' => $context,
