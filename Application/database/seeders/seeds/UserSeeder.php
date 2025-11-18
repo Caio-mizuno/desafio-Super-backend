@@ -12,8 +12,6 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $subadqAId = Subacquirer::where('name', 'SubadqA')->value('id');
-        $subadqBId = Subacquirer::where('name', 'SubadqB')->value('id');
-
         if (!User::where('email', 'SubadqA@example.com')->exists()) {
             $user = User::create([
                 'name' => 'User Login',
@@ -29,6 +27,8 @@ class UserSeeder extends Seeder
                 'account_type' => 'checking',
             ]);
         }
+
+        $subadqBId = Subacquirer::where('name', 'SubadqB')->value('id');
         if (!User::where('email', 'SubadqB@example.com')->exists()) {
             $user = User::create([
                 'name' => 'User Login',
@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
                 'bank_code' => '001',
                 'branch' => '0002',
                 'account_number' => '98765432100',
-                'account_type' => 'savings',
+                'account_type' => 'checking',
             ]);
         }
     }
