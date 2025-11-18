@@ -69,3 +69,26 @@ O container `api-backend` inicia o Octane (Swoole) e `schedule:work`/`horizon` v
 ## Notas de Segurança
 - Nunca commit de senhas, chaves ou tokens reais
 - Use apenas o `.env.example` como referência com valores fictícios
+
+## Bibliotecas Integradas (Composer)
+- Plataforma: `php` (^8.2)
+
+### Produção
+- `laravel/framework` (^12.0)
+- `laravel/octane` (^2.12)
+- `laravel/horizon` (^5.40)
+- `laravel/sanctum` (^4.0)
+- `darkaonline/l5-swagger` (^9.0)
+- `laravel/tinker` (^2.10.1)
+- `yajra/laravel-oci8` (*)
+
+### Desenvolvimento
+- `phpunit/phpunit` (^11.5.3)
+- `nunomaduro/collision` (^8.6)
+- `mockery/mockery` (^1.6)
+- `fakerphp/faker` (^1.23)
+- `laravel/pint` (^1.13)
+- `laravel/pail` (^1.2.2)
+- `laravel/sail` (^1.41)
+
+As versões listadas refletem as restrições definidas em `Application/composer.json`.
