@@ -8,9 +8,7 @@ use App\Helpers\LogHelper;
 use App\Models\User;
 use App\Models\Withdrawal;
 use App\Repositories\Interfaces\WithdrawalRepositoryInterface;
-use App\Repositories\Interfaces\LogRepositoryInterface;
 use App\Services\Pix\PixStrategyResolver;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Bus;
 
 class WithdrawalService

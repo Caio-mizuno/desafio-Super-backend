@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreatePixRequest;
-use App\Models\User;
 use App\Services\PixService;
 use OpenApi\Attributes as OA;
 
