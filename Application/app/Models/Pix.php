@@ -21,6 +21,7 @@ class Pix extends Model
         'payer_document',
         'payment_date',
         'payload',
+        'expires_at',
     ];
 
     protected $casts = [
