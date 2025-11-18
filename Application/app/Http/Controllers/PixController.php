@@ -8,9 +8,7 @@ use App\Services\PixService;
 
 class PixController extends Controller
 {
-    public function __construct(private PixService $pixService)
-    {
-    }
+    public function __construct(private PixService $pixService) {}
 
     public function store(CreatePixRequest $request)
     {
@@ -19,4 +17,3 @@ class PixController extends Controller
         return $this->success($pix, 'Pix criado');
     }
 }
-

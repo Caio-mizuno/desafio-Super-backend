@@ -56,7 +56,12 @@ class WithdrawalService
             'requested_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ]);
 
-        $this->logRepository->create(7, 'Withdrawal created', $data, $withdrawal->toArray());
+        $this->logRepository->create(
+            7,
+            'Withdrawal created',
+            $data,
+            $withdrawal->toArray()
+        );
         return $withdrawal;
     }
 }
