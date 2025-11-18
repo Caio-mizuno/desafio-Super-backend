@@ -13,9 +13,7 @@ class BasicException extends Exception
      * Report the exception.
      */
 
-    public function report(): void
-    {
-    }
+    public function report(): void {}
 
     /**
      * Render the exception into an HTTP response.
@@ -23,8 +21,11 @@ class BasicException extends Exception
     public function render(): JsonResponse
     {
         $response = [
-            'status' => 'error',
-            'message' => $this->messageError
+            "status" => false,
+            "message" => $this->messageError,
+            "authorization" => [
+                "status" => "reproved"
+            ]
         ];
         return response()->json($response, $this->statusCode);
     }

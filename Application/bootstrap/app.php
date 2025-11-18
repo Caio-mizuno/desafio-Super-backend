@@ -41,8 +41,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(function (Throwable $e) {
             $response = [
-                'status' => false,
-                'message' => $e->getMessage(),
+                "status" => false,
+                "message" => $e->getMessage(),
                 "authorization" => [
                     "status" => "reproved"
                 ]

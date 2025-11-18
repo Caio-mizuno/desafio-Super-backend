@@ -2,6 +2,7 @@
 
 namespace App\Services\Pix\Strategies\SubadqB;
 
+use App\Exceptions\BasicException;
 use App\Helpers\SubadqBHelper;
 use App\Services\Pix\Strategies\PixGenerationStrategyInterface;
 
@@ -21,9 +22,15 @@ class SubadqBPixStrategy implements PixGenerationStrategyInterface
             ],
             "expires_in" => env('SUBADQB_PIX_EXPIRES_IN', 3600),
         ]);
-
+        if (!$response->successful()) {
+            throw new BasicException($response->json('message'), $response->status());
+        }
         return [
-            'transaction_id' => $response->json('transaction_id')
+            'transaction_id' => $response->json('transaction_id'),
+            'location' => $response->json('location'),
+            'qrcode' => $response->json('qrcode'),
+            'expires_at' => $response->json('expires_at'),
+            'status' => $response->json('status'),
         ];
     }
 
