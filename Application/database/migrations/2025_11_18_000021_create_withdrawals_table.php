@@ -16,6 +16,7 @@ return new class extends Migration {
                 '0: PENDING, 1: PROCESSING, 2: SUCCESS, 3: DONE, 4: FAILED, 5: CANCELLED'
             );
             $table->decimal('amount', 12, 2);
+            $table->timestamp('completed_at')->nullable();
             $table->timestamps();
             $table->index('external_withdraw_id');
         });

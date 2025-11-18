@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Constants\PixStatus;
 use App\Models\Withdrawal;
 use App\Repositories\Interfaces\WithdrawalRepositoryInterface;
 use App\Repositories\Interfaces\LogRepositoryInterface;
@@ -15,9 +16,7 @@ class ProcessWithdrawWebhook implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(public array $payload)
-    {
-    }
+    public function __construct(public array $payload) {}
 
     public function handle(WithdrawalRepositoryInterface $withdrawalRepository, LogRepositoryInterface $logRepository): void
     {
@@ -40,17 +39,13 @@ class ProcessWithdrawWebhook implements ShouldQueue
 
         $status = $isSubadqA ? ($this->payload['status'] ?? 'PENDING') : ($this->payload['data']['status'] ?? 'PENDING');
         $completedAt = $isSubadqA ? ($this->payload['completed_at'] ?? null) : ($this->payload['data']['processed_at'] ?? null);
-        $transactionId = $isSubadqA ? ($this->payload['transaction_id'] ?? null) : ($this->payload['data']['transaction_id'] ?? null);
 
-        $attributes = ['payload' => $this->payload];
+        $attributes = [];
         if ($completedAt) {
             $attributes['completed_at'] = $completedAt;
         }
-        if ($transactionId) {
-            $attributes['transaction_id'] = $transactionId;
-        }
 
-        $updated = $withdrawalRepository->updateStatus($withdrawal, $status, $attributes);
+        $updated = $withdrawalRepository->updateStatus($withdrawal, PixStatus::fromString($status), $attributes);
         $logRepository->create(2, 'Withdraw webhook processed', [
             'withdrawal_id' => $updated->id,
             'external_withdraw_id' => $externalId,

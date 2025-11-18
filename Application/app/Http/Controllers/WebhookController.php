@@ -12,7 +12,7 @@ class WebhookController extends Controller
     public function pix(Request $request)
     {
         $payload = $request->all();
-        $job = Bus::dispatchSync(
+        $job = Bus::dispatch(
             new \App\Jobs\ProcessPixWebhook($payload)
         );
         unset($job);
