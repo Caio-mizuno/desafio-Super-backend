@@ -4,44 +4,40 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
-use App\Models\User;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+ 
 
 class AuthController extends Controller
 {
+    public function __construct(private AuthService $authService)
+    {
+    }
+
     public function register(RegisterRequest $request)
     {
-        $data = $request->validated();
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'subacquirer' => $data['subacquirer'],
-        ]);
-        $token = $user->createToken('api')->plainTextToken;
-        return $this->success(['user' => $user, 'token' => $token], 'Usuário registrado');
+        $result = $this->authService->register($request->validated());
+        return $this->success($result, 'Usuário registrado');
     }
 
     public function login(LoginRequest $request)
     {
-        $data = $request->validated();
-        $user = User::where('email', $data['email'])->first();
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        $result = $this->authService->login($request->validated());
+        if (!$result) {
             return $this->error('Credenciais inválidas', 401);
         }
-        $token = $user->createToken('api')->plainTextToken;
-        return $this->success(['user' => $user, 'token' => $token], 'Login realizado');
+        return $this->success($result, 'Login realizado');
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $this->authService->logout($request);
         return $this->success(null, 'Logout realizado');
     }
 
     public function show(Request $request)
     {
-        return $this->success($request->user(), 'Usuário autenticado');
+        $user = $this->authService->show($request);
+        return $this->success($user, 'Usuário autenticado');
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Withdrawal;
-use App\Repositories\WithdrawalRepositoryInterface;
+use App\Repositories\Interfaces\WithdrawalRepositoryInterface;
 
 class WithdrawalRepository implements WithdrawalRepositoryInterface
 {

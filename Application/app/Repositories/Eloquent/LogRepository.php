@@ -3,7 +3,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Log;
-use App\Repositories\LogRepositoryInterface;
+use App\Repositories\Interfaces\LogRepositoryInterface;
 
 class LogRepository implements LogRepositoryInterface
 {

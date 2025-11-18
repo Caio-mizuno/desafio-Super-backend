@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Jobs\SimulateWithdrawWebhook;
 use App\Models\User;
 use App\Models\Withdrawal;
-use App\Repositories\WithdrawalRepositoryInterface;
-use App\Repositories\LogRepositoryInterface;
+use App\Repositories\Interfaces\WithdrawalRepositoryInterface;
+use App\Repositories\Interfaces\LogRepositoryInterface;
 use Illuminate\Support\Facades\Http;
 
 class WithdrawalService

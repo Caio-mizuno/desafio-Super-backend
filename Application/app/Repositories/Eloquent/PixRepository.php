@@ -3,7 +3,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Pix;
-use App\Repositories\PixRepositoryInterface;
+use App\Repositories\Interfaces\PixRepositoryInterface;
 
 class PixRepository implements PixRepositoryInterface
 {

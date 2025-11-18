@@ -3,8 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\Pix;
-use App\Repositories\PixRepositoryInterface;
-use App\Repositories\LogRepositoryInterface;
+use App\Repositories\Interfaces\PixRepositoryInterface;
+use App\Repositories\Interfaces\LogRepositoryInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

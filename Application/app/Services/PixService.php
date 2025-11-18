@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Jobs\SimulatePixWebhook;
 use App\Models\Pix;
 use App\Models\User;
-use App\Repositories\PixRepositoryInterface;
-use App\Repositories\LogRepositoryInterface;
+use App\Repositories\Interfaces\PixRepositoryInterface;
+use App\Repositories\Interfaces\LogRepositoryInterface;
 use Illuminate\Support\Facades\Http;
 
 class PixService
