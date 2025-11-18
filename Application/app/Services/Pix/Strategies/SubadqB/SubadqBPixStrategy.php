@@ -13,7 +13,7 @@ class SubadqBPixStrategy implements PixGenerationStrategyInterface
     {
         $response = $this->helper->client($data)->post('/pix/create', [
             'seller_id' => env('SUBADQB_MERCHANT_ID', 'm123'),
-            'order' => $data['order_id'],
+            'order' => $data['idempotency'],
             'amount' => (int) $data['amount'],
             'payer' => [
                 'name' => $data['payer_name'],

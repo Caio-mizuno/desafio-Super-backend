@@ -22,6 +22,7 @@ class Pix extends Model
         'payment_date',
         'payload',
         'expires_at',
+        'idempotency'
     ];
 
     protected $casts = [
