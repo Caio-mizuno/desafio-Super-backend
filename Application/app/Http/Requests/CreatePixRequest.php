@@ -15,8 +15,6 @@ class CreatePixRequest extends FormRequest
     {
         return [
             'amount' => ['required', 'numeric', 'min:0.01'],
-            'payer_name' => ['nullable', 'string'],
-            'payer_document' => ['nullable', 'string'],
             'mock_header' => ['nullable', 'string'],
         ];
     }

@@ -22,6 +22,12 @@ class PixService
         // Convert to cents, remove decimal point, secure against float precision errors
         $data['amount'] = (int) number_format($data['amount'], 2, '', '');
 
+        $pixExist = $user->pixes()->where('expires_at', '>', now())->first();
+
+        if ($pixExist) {
+            throw new \Exception('You have an active PIX payment. Please, wait for it to expire.');
+        }
+
         $strategy = $this->resolver->resolve($user->subacquirer->name);
         $result = $strategy->createPix($data);
 
