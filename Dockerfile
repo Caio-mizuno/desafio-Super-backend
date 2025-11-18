@@ -36,7 +36,6 @@ RUN RUNTIME_DEPS="tini fcgi"; \
 
 # ---------------------------------------- Install / Enable PHP Extensions ---------------------------------------------
 
-ENV TZ=America/Fortaleza
 RUN apk add --no-cache --virtual .build-deps \
   $PHPIZE_DEPS  \
   libzip-dev    \

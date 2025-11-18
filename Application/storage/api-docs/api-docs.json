@@ -1,0 +1,349 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Super Backend API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:9923",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "operationId": "d764dd091cc4494ae0baf360b03319f3",
+                "parameters": [
+                    {
+                        "name": "security",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "SECURITY_KEY_SAMPLE"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "subacquirer_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "subacquirer_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuário registrado"
+                    }
+                },
+                "security": [
+                    {
+                        "apiKeySecurity": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "operationId": "8dcb70df1020986038d098cc08d05dae",
+                "parameters": [
+                    {
+                        "name": "security",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "SECURITY_KEY_SAMPLE"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "SubadqA@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login realizado"
+                    }
+                },
+                "security": [
+                    {
+                        "apiKeySecurity": []
+                    }
+                ]
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "operationId": "fe8f3429cd6979b3b4517e186505f9f9",
+                "responses": {
+                    "200": {
+                        "description": "Logout realizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "operationId": "6a9dce30dda4de2d3867d4dd03e9d9b6",
+                "responses": {
+                    "200": {
+                        "description": "Usuário autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/saude-server-check": {
+            "get": {
+                "tags": [
+                    "Health"
+                ],
+                "operationId": "604bd47449aca11799e354033cb659e0",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/pix": {
+            "post": {
+                "tags": [
+                    "Pix"
+                ],
+                "operationId": "cede7c3f747444af9878d007300eea91",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "amount",
+                                    "idempotency"
+                                ],
+                                "properties": {
+                                    "amount": {
+                                        "type": "integer",
+                                        "minimum": 1
+                                    },
+                                    "idempotency": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Pix criado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/webhooks/pix": {
+            "post": {
+                "tags": [
+                    "Webhooks"
+                ],
+                "operationId": "e1889a3a42425254df391a0825b77017",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Webhook de PIX enfileirado"
+                    }
+                }
+            }
+        },
+        "/api/webhooks/withdraw": {
+            "post": {
+                "tags": [
+                    "Webhooks"
+                ],
+                "operationId": "2ab21396df684f5248e21aa949d9cc98",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Webhook de Saque enfileirado"
+                    }
+                }
+            }
+        },
+        "/api/withdraw": {
+            "post": {
+                "tags": [
+                    "Withdraw"
+                ],
+                "operationId": "480f5a1e6339ff26ee076ffcf4ec12d9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "bank_account",
+                                    "pix_id",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "bank_account": {
+                                        "type": "integer"
+                                    },
+                                    "pix_id": {
+                                        "type": "integer"
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0.01
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Saque criado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            },
+            "apiKeySecurity": {
+                "type": "apiKey",
+                "name": "security",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Health",
+            "description": "Health"
+        },
+        {
+            "name": "Pix",
+            "description": "Pix"
+        },
+        {
+            "name": "Webhooks",
+            "description": "Webhooks"
+        },
+        {
+            "name": "Withdraw",
+            "description": "Withdraw"
+        }
+    ]
+}

@@ -1,12 +1,11 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HealthController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api'])->group(function () {
-    Route::get('/saude-server-check', function () {
-        return response('OK', 200);
-    });
+    Route::get('/saude-server-check', [HealthController::class, 'index']);
 });
 
 

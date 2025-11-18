@@ -35,9 +35,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        if ($exceptions instanceof BasicException) {
-            $exceptions->render();
-        }
+        $exceptions->render(function (BasicException $e) {
+            return $e->render();
+        });
 
         $exceptions->render(function (Throwable $e) {
             $response = [
@@ -48,6 +48,6 @@ return Application::configure(basePath: dirname(__DIR__))
                 ]
             ];
 
-            return response($response, 500);
+            return response()->json($response, 500);
         });
     })->create();
