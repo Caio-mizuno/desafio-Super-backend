@@ -47,7 +47,9 @@ class SubadqBPixStrategy implements PixGenerationStrategyInterface
             'amount' => (float) $data['amount'],
             'transaction_id' => $data['transaction_id'],
         ]);
-
+        if (!$response->successful()) {
+            throw new BasicException($response->json('error'), $response->status());
+        }
         return [
             'withdraw_id' => $response->json('withdraw_id'),
             'status' => $response->json('status'),

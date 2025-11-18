@@ -2,6 +2,7 @@
 
 namespace App\Services\Pix\Strategies\SubadqA;
 
+use App\Exceptions\BasicException;
 use App\Helpers\LogHelper;
 use App\Helpers\SubadqAHelper;
 use App\Services\Pix\Strategies\PixGenerationStrategyInterface;
@@ -25,6 +26,10 @@ class SubadqAPixStrategy implements PixGenerationStrategyInterface
             ],
             "expires_in" => env('SUBADQA_PIX_EXPIRES_IN', 3600),
         ]);
+
+        if (!$response->successful()) {
+            throw new BasicException($response->json('message'), $response->status());
+        }
 
         LogHelper::save(6, 'PIX created', $data, $response->json());
 
@@ -50,6 +55,10 @@ class SubadqAPixStrategy implements PixGenerationStrategyInterface
             'amount' => (float) $data['amount'],
             'transaction_id' => $data['transaction_id'],
         ]);
+
+        if (!$response->successful()) {
+            throw new BasicException($response->json('error'), $response->status());
+        }
 
         LogHelper::save(7, 'Withdrawal created', $data, $response->json());
 

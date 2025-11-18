@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 
 class BasicException extends Exception
 {
-    public function __construct(protected string $messageError = "", protected  int $statusCode = 0, protected  ?int $typeRequest = null) {}
+    public function __construct(protected string|array $messageError = "", protected  int $statusCode = 0, protected  ?int $typeRequest = null) {}
 
     /**
      * Report the exception.
